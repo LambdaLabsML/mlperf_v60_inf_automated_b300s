@@ -1,7 +1,6 @@
 # Automating MLPerf Inference v6.0 GPT-OSS-120b Workload 
-DJ Matusz
 
-# Automation script: automate_pass_scratch_path5
+## Automation script: automate_pass_scratch_path5
 This is the current iteration of the script I have, specfic to running GPT-OSS-120B on the B300s.
 There are four steps that need to be done by the user:
 
