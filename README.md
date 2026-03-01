@@ -1,7 +1,7 @@
 # Automating MLPerf Inference v6.0 GPT-OSS-120b Workload 
 
 ## Automation script: automate_pass_scratch_path5
-This is the current iteration of the script I have, specfic to running GPT-OSS-120B on the B300s.
+This is the current iteration of the script, specfic to running GPT-OSS-120B on the B300s.
 There are four steps that need to be done by the user:
 
 1) Create a directory on your server somewhere at the root. Let's call it `/mlperf`.
