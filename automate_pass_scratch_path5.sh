@@ -9,12 +9,12 @@ set -euo pipefail
 # -----------------------------------------------------------------------------
 # Configurable Variables
 # -----------------------------------------------------------------------------
-WORK_DIR="/dj"
+WORK_DIR=""              # Set via --work-dir argument
 SCRATCH_PATH=""          # Set via --scratch-path argument
-REPO_DIR="${WORK_DIR}/nv-mlpinf-partner"
+REPO_DIR=""              # Derived from WORK_DIR after argument parsing
 REPO_URL="git@gitlab.com:nvidia/mlperf-inference-partner/nv-mlpinf-partner.git"
-NVIDIA_DIR="${REPO_DIR}/closed/NVIDIA"
-DOCKERFILE="${NVIDIA_DIR}/docker/Dockerfile.user"
+NVIDIA_DIR=""            # Derived from REPO_DIR after argument parsing
+DOCKERFILE=""            # Derived from NVIDIA_DIR after argument parsing
 
 # Data root — overridden by --toggle_test_data
 DATA_ROOT=""             # Derived from SCRATCH_PATH after argument parsing
@@ -31,11 +31,17 @@ parse_args() {
 
     for arg in "$@"; do
         case "${arg}" in
+            --work-dir=*)
+                WORK_DIR="${arg#*=}"
+                ;;
+            --work-dir)
+                # Handled via positional loop below
+                ;;
             --scratch-path=*)
                 SCRATCH_PATH="${arg#*=}"
                 ;;
             --scratch-path)
-                # Handled via shift in next iteration; use a flag approach below
+                # Handled via positional loop below
                 ;;
             --toggle_test_data)
                 toggle_test_data=true
@@ -46,7 +52,7 @@ parse_args() {
         esac
     done
 
-    # Handle --scratch-path VALUE (space-separated) via positional loop
+    # Handle space-separated --key VALUE pairs via positional loop
     local i=1
     for arg in "$@"; do
         if [[ "${arg}" == "--scratch-path" ]]; then
@@ -58,12 +64,26 @@ parse_args() {
                 die "--scratch-path requires a value."
             fi
         fi
+        if [[ "${arg}" == "--work-dir" ]]; then
+            local next
+            next=$(eval "echo \${$((i+1)):-}")
+            if [[ -n "${next}" && "${next}" != --* ]]; then
+                WORK_DIR="${next}"
+            else
+                die "--work-dir requires a value."
+            fi
+        fi
         ((i++))
     done
 
+    [[ -n "${WORK_DIR}" ]]    || die "Missing required argument: --work-dir <path>"
     [[ -n "${SCRATCH_PATH}" ]] || die "Missing required argument: --scratch-path <path>"
 
-    # Derive DATA_ROOT now that SCRATCH_PATH is known
+    # Derive paths now that WORK_DIR and SCRATCH_PATH are known
+    REPO_DIR="${WORK_DIR}/nv-mlpinf-partner"
+    NVIDIA_DIR="${REPO_DIR}/closed/NVIDIA"
+    DOCKERFILE="${NVIDIA_DIR}/docker/Dockerfile.user"
+
     if [[ "${toggle_test_data}" == true ]]; then
         DATA_ROOT="${WORK_DIR}/scratch_test_for_data/data"
         warn "TEST MODE: Using data root at ${DATA_ROOT}"
@@ -319,9 +339,9 @@ run_benchmarks() {
         || die "make run_llm_server failed."
     log "TRT-LLM servers started."
 
-    # Step 2: Wait 15 minutes for servers to load the model fully
-    log "Waiting 15 minutes for TRT-LLM servers to load before running harness..."
-    for i in $(seq 15 -1 1); do
+    # Step 2: Wait 10 minutes for servers to load the model fully
+    log "Waiting 10 minutes for TRT-LLM servers to load before running harness..."
+    for i in $(seq 10 -1 1); do
         log "  Starting harness in ${i} minute(s)..."
         sleep 60
     done
