@@ -1,0 +1,2 @@
+**/*mlperf_log_accuracy.json filter=lfs diff=lfs merge=lfs -text
+**/*mlperf_log_trace.json filter=lfs diff=lfs merge=lfs -text
