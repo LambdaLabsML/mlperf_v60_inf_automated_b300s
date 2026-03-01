@@ -8,7 +8,7 @@ curl -fsSL https://raw.githubusercontent.com/LambdaLabsML/mlperf_v60_inf_automat
 
 This downloads data/model, builds the Docker image, and runs the benchmark.
 
-To re-run without re-downloading data:
+Download could take around 1.5 hours to finish (at average speed of 24.2 MB/s). To re-run without re-downloading data, use `--skip-download`:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/LambdaLabsML/mlperf_v60_inf_automated_b300s/master/run_gpt_oss.sh | bash -s -- --work-dir "$WORK_DIR" --skip-download
