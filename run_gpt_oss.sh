@@ -32,6 +32,14 @@ log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [INFO]  $*"; }
 warn() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [WARN]  $*" >&2; }
 die()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [ERROR] $*" >&2; exit 1; }
 
+cleanup_container() {
+    if [[ -n "${DOCKER_CONTAINER_NAME:-}" ]]; then
+        log "Stopping container '${DOCKER_CONTAINER_NAME}'..."
+        docker stop "${DOCKER_CONTAINER_NAME}" 2>/dev/null || true
+        log "Container stopped."
+    fi
+}
+
 # -----------------------------------------------------------------------------
 # Configuration
 # -----------------------------------------------------------------------------
@@ -56,6 +64,11 @@ REPO_URL="git@gitlab.com:nvidia/mlperf-inference-partner/nv-mlpinf-partner.git"
 # MLPerf settings
 MLPERF_SYSTEM_NAME="B300-SXM-270GBx8"
 MLPERF_RUN_ARGS="--benchmarks=gpt-oss-120b --scenarios=Server --core_type=trtllm_endpoint --test_mode=PerformanceOnly"
+
+# TRT-LLM health check settings
+TRTLLM_PORT="${TRTLLM_PORT:-30000}"
+TRTLLM_HEALTH_TIMEOUT="${TRTLLM_HEALTH_TIMEOUT:-1800}"  # 30 minutes
+TRTLLM_POLL_INTERVAL="${TRTLLM_POLL_INTERVAL:-10}"      # 10 seconds
 
 # Container name (set during launch)
 DOCKER_CONTAINER_NAME=""
@@ -350,6 +363,44 @@ run_in_container() {
         || die "Command failed in container: $*"
 }
 
+wait_for_trtllm_server() {
+    local container_name="$1"
+    local host="${2:-localhost}"
+    local port="${3:-${TRTLLM_PORT}}"
+    local timeout="${4:-${TRTLLM_HEALTH_TIMEOUT}}"
+    local poll_interval="${TRTLLM_POLL_INTERVAL}"
+    local status_interval=30
+
+    log "Waiting for TRT-LLM server at ${host}:${port} to be healthy (timeout: ${timeout}s)..."
+
+    local start_time
+    start_time=$(date +%s)
+
+    while true; do
+        local current_time elapsed http_code
+        current_time=$(date +%s)
+        elapsed=$((current_time - start_time))
+
+        if [[ ${elapsed} -ge ${timeout} ]]; then
+            die "TRT-LLM server did not become healthy within ${timeout} seconds."
+        fi
+
+        http_code=$(docker exec "${container_name}" \
+            curl -s -o /dev/null -w "%{http_code}" "http://${host}:${port}/health" 2>/dev/null || echo "000")
+
+        if [[ "${http_code}" == "200" ]]; then
+            log "TRT-LLM server is healthy after ${elapsed} seconds."
+            return 0
+        fi
+
+        if [[ $((elapsed % status_interval)) -lt ${poll_interval} ]] && [[ ${elapsed} -gt 0 ]]; then
+            log "  Waiting for TRT-LLM server... (${elapsed}s elapsed, HTTP: ${http_code})"
+        fi
+
+        sleep "${poll_interval}"
+    done
+}
+
 run_benchmarks() {
     local container_name="${DOCKER_CONTAINER_NAME}"
     [[ -n "${container_name}" ]] || die "Container name not set. Was launch_container() called?"
@@ -366,12 +417,7 @@ run_benchmarks() {
         || die "make run_llm_server failed."
     log "TRT-LLM servers started."
 
-    log "Waiting 10 minutes for TRT-LLM servers to load before running harness..."
-    for i in $(seq 10 -1 1); do
-        log "  Starting harness in ${i} minute(s)..."
-        sleep 60
-    done
-    log "Wait complete."
+    wait_for_trtllm_server "${container_name}" "localhost" "${TRTLLM_PORT}" "${TRTLLM_HEALTH_TIMEOUT}"
 
     log "Running harness (make run_harness)..."
     run_in_container "${container_name}" "cd /work && make run_harness" \
@@ -384,6 +430,8 @@ run_benchmarks() {
 # -----------------------------------------------------------------------------
 main() {
     parse_args "$@"
+
+    trap cleanup_container EXIT
 
     log "=============================================="
     log "MLPerf Inference Benchmark — GPT-OSS-120B"
