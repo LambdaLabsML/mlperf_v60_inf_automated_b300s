@@ -138,6 +138,7 @@ clone_repo() {
         git -C "${REPO_DIR}" pull --ff-only || die "Failed to pull latest changes."
     else
         git clone "${REPO_URL}" "${REPO_DIR}" || die "Failed to clone repo from ${REPO_URL}"
+	cd "${REPO_DIR}" && git checkout d3091a5590a7a3dd0f4b035fa8514162bcc24ecc && cd "${WORK_DIR}"
     fi
     log "Repo ready at ${REPO_DIR}."
 }
