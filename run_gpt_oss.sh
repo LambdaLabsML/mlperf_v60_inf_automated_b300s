@@ -40,6 +40,42 @@ cleanup_container() {
     fi
 }
 
+build_run_args() {
+    local scenario="$1"
+    local test_mode="$2"
+    echo "${MLPERF_RUN_ARGS_BASE} --scenarios=${scenario} --test_mode=${test_mode}"
+}
+
+build_audit_run_args() {
+    local scenario="$1"
+    echo "${MLPERF_AUDIT_RUN_ARGS_BASE} --scenarios=${scenario}"
+}
+
+get_docker_container_name() {
+    [[ -n "${DOCKER_CONTAINER_NAME:-}" ]] || die "Container name not set. Was launch_container() called?"
+    echo "${DOCKER_CONTAINER_NAME}"
+}
+
+teardown_container() {
+    local container_name="$1"
+
+    log "Stopping container '${container_name}'..."
+    docker stop "${container_name}" 2>/dev/null \
+        && log "Container '${container_name}' stopped." \
+        || warn "Container '${container_name}' may have already exited."
+
+    log "Removing container '${container_name}'..."
+    docker rm -f "${container_name}" 2>/dev/null \
+        && log "Container '${container_name}' removed." \
+        || warn "Container '${container_name}' was already removed (--rm likely cleaned it up)."
+
+    log "Verifying no residual TRT-LLM server processes remain on the host..."
+    if pgrep -f trtllm_server > /dev/null 2>&1 || pgrep -f tritonserver > /dev/null 2>&1; then
+        die "Residual TRT-LLM/Triton server processes detected on host after container removal. Please kill them manually before continuing."
+    fi
+    log "No residual TRT-LLM server processes detected."
+}
+
 # -----------------------------------------------------------------------------
 # Configuration
 # -----------------------------------------------------------------------------
@@ -63,7 +99,17 @@ REPO_URL="git@gitlab.com:nvidia/mlperf-inference-partner/nv-mlpinf-partner.git"
 
 # MLPerf settings
 MLPERF_SYSTEM_NAME="B300-SXM-270GBx8"
-MLPERF_RUN_ARGS="--benchmarks=gpt-oss-120b --scenarios=Server --core_type=trtllm_endpoint --test_mode=PerformanceOnly"
+
+# Run configurations: "scenario:test_mode" pairs executed in order
+MLPERF_RUNS=(
+    "Server:PerformanceOnly"
+    "Server:AccuracyOnly"
+    "Offline:PerformanceOnly"
+    "Offline:AccuracyOnly"
+)
+
+MLPERF_RUN_ARGS_BASE="--benchmarks=gpt-oss-120b --core_type=trtllm_endpoint"
+MLPERF_AUDIT_RUN_ARGS_BASE="--benchmarks=gpt-oss-120b --core_type=trtllm_endpoint"
 
 # TRT-LLM health check settings
 TRTLLM_PORT="${TRTLLM_PORT:-30000}"
@@ -157,6 +203,7 @@ clone_repo() {
         git -C "${REPO_DIR}" pull --ff-only || die "Failed to pull latest changes."
     else
         git clone "${REPO_URL}" "${REPO_DIR}" || die "Failed to clone repo from ${REPO_URL}"
+        cd "${REPO_DIR}" && git checkout d3091a5590a7a3dd0f4b035fa8514162bcc24ecc && cd "${WORK_DIR}"
     fi
     log "Repo ready at ${REPO_DIR}."
 }
@@ -286,7 +333,9 @@ setup_lfs_and_prebuild() {
 # Phase 7: Launch Container
 # -----------------------------------------------------------------------------
 launch_container() {
-    log "Launching container in background..."
+    local run_args="$1"
+
+    log "Launching container in background (RUN_ARGS='${run_args}')..."
     cd "${NVIDIA_DIR}" || die "Failed to cd to ${NVIDIA_DIR}"
 
     local uname arch docker_tag image_name container_name
@@ -323,7 +372,7 @@ launch_container() {
         --device /dev/fuse \
         --gpus all \
         -e SYSTEM_NAME="${MLPERF_SYSTEM_NAME}" \
-        -e RUN_ARGS="${MLPERF_RUN_ARGS}" \
+        -e RUN_ARGS="${run_args}" \
         -e MLPERF_SCRATCH_PATH="${SCRATCH_PATH}" \
         -h "${container_name:0:64}" \
         --add-host "${container_name}:127.0.0.1" \
@@ -401,13 +450,21 @@ wait_for_trtllm_server() {
     done
 }
 
-run_benchmarks() {
-    local container_name="${DOCKER_CONTAINER_NAME}"
-    [[ -n "${container_name}" ]] || die "Container name not set. Was launch_container() called?"
+run_single_benchmark() {
+    local scenario="$1"
+    local test_mode="$2"
+    local run_args
+    run_args=$(build_run_args "${scenario}" "${test_mode}")
 
+    log "============================================================"
+    log "Starting benchmark: scenario=${scenario} test_mode=${test_mode}"
+    log "  RUN_ARGS: ${run_args}"
+    log "============================================================"
+
+    launch_container "${run_args}"
+    local container_name
+    container_name=$(get_docker_container_name)
     wait_for_container "${container_name}"
-
-    log "Running benchmarks inside container '${container_name}'..."
 
     run_in_container "${container_name}" \
         "echo 'SYSTEM_NAME='\$SYSTEM_NAME && echo 'RUN_ARGS='\$RUN_ARGS"
@@ -423,6 +480,142 @@ run_benchmarks() {
     run_in_container "${container_name}" "cd /work && make run_harness" \
         || die "make run_harness failed."
     log "Harness run complete."
+
+    log "Benchmark complete: scenario=${scenario} test_mode=${test_mode}"
+    log "============================================================"
+}
+
+run_benchmarks() {
+    log "============================================================"
+    log "Beginning all benchmark runs..."
+    log "============================================================"
+
+    for run in "${MLPERF_RUNS[@]}"; do
+        local scenario test_mode
+        scenario="${run%%:*}"
+        test_mode="${run##*:}"
+
+        run_single_benchmark "${scenario}" "${test_mode}"
+
+        local container_name
+        container_name=$(get_docker_container_name)
+        teardown_container "${container_name}"
+        DOCKER_CONTAINER_NAME=""
+    done
+
+    log "============================================================"
+    log "All benchmark runs completed successfully."
+    log "============================================================"
+}
+
+# -----------------------------------------------------------------------------
+# Phase 9: Prepare Compliance Data
+# -----------------------------------------------------------------------------
+prepare_compliance_data() {
+    log "Preparing compliance test data for TEST07..."
+
+    local compliance_dir="${SCRATCH_PATH}/data/gpt-oss/v4/compliance/test07"
+    local input_parquet="${SCRATCH_PATH}/data/gpt-oss/v4/acc/acc_eval_compliance_gpqa.parquet"
+
+    if [[ -d "${compliance_dir}" && -f "${compliance_dir}/input_ids_padded.npy" && -f "${compliance_dir}/input_lens.npy" ]]; then
+        log "Compliance data already exists at ${compliance_dir} — skipping."
+        return 0
+    fi
+
+    if [[ ! -f "${input_parquet}" ]]; then
+        die "Compliance parquet file not found at: ${input_parquet}"
+    fi
+
+    log "Creating compliance data directory: ${compliance_dir}"
+    mkdir -p "${compliance_dir}"
+
+    log "Running preprocess_compliance_data.py to generate TEST07 dataset..."
+    cd "${NVIDIA_DIR}" || die "Failed to cd to ${NVIDIA_DIR}"
+
+    python3 code/gpt-oss-120b/tensorrt/preprocess_compliance_data.py \
+        --input-file "${input_parquet}" \
+        --output-dir "${compliance_dir}" \
+        || die "preprocess_compliance_data.py failed."
+
+    if [[ -f "${compliance_dir}/input_ids_padded.npy" && -f "${compliance_dir}/input_lens.npy" ]]; then
+        log "Compliance data prepared successfully."
+    else
+        die "Compliance data files were not created. Check preprocess_compliance_data.py output."
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# Phase 10: Audit Tests
+# -----------------------------------------------------------------------------
+run_audit_for_scenario() {
+    local scenario="$1"
+    local run_args
+    run_args=$(build_audit_run_args "${scenario}")
+
+    log "============================================================"
+    log "Beginning audit test pipeline for scenario=${scenario}..."
+    log "============================================================"
+
+    log "Rebuilding/re-entering container for audit tests (scenario=${scenario})..."
+    cd "${NVIDIA_DIR}" || die "Failed to cd to ${NVIDIA_DIR}"
+
+    make prebuild \
+        BENCHMARK=gptoss \
+        ENV=release \
+        DOCKER_DETACH=1 \
+        || die "make prebuild (audit ${scenario}) failed."
+    log "Docker image ready for audit container."
+
+    launch_container "${run_args}"
+    local audit_container
+    audit_container=$(get_docker_container_name)
+    wait_for_container "${audit_container}"
+
+    log "Staging results inside container..."
+    run_in_container "${audit_container}" "cd /work && make stage_results" \
+        || die "make stage_results failed."
+    log "Results staged."
+
+    log "Preprocessing compliance data for TEST07 inside container..."
+    run_in_container "${audit_container}" \
+        "cd /work && python3 code/gpt-oss-120b/tensorrt/preprocess_compliance_data.py \
+            --input-file build/data/gpt-oss/v4/acc/acc_eval_compliance_gpqa.parquet \
+            --output-dir build/data/gpt-oss/v4/compliance/test07" \
+        || die "preprocess_compliance_data.py failed."
+    log "Compliance data preprocessing complete."
+
+    log "Starting TRT-LLM servers for audit tests (make run_llm_server)..."
+    run_in_container "${audit_container}" "cd /work && make run_llm_server" \
+        || die "make run_llm_server (audit ${scenario}) failed."
+    log "TRT-LLM servers started."
+
+    wait_for_trtllm_server "${audit_container}" "localhost" "${TRTLLM_PORT}" "${TRTLLM_HEALTH_TIMEOUT}"
+
+    log "Running audit harness (make run_audit_harness)..."
+    run_in_container "${audit_container}" "cd /work && make run_audit_harness" \
+        || die "make run_audit_harness (${scenario}) failed."
+    log "Audit harness run complete."
+
+    teardown_container "${audit_container}"
+    DOCKER_CONTAINER_NAME=""
+
+    log "============================================================"
+    log "Audit tests for scenario=${scenario} completed successfully."
+    log "============================================================"
+}
+
+run_audit_tests() {
+    log "============================================================"
+    log "Beginning audit test pipeline for all scenarios..."
+    log "============================================================"
+
+    for scenario in Server Offline; do
+        run_audit_for_scenario "${scenario}"
+    done
+
+    log "============================================================"
+    log "All audit tests completed successfully."
+    log "============================================================"
 }
 
 # -----------------------------------------------------------------------------
@@ -439,6 +632,10 @@ main() {
     log "  Work dir     : ${WORK_DIR}"
     log "  Scratch path : ${SCRATCH_PATH}"
     log "  System       : ${MLPERF_SYSTEM_NAME}"
+    log "  Benchmark runs planned:"
+    for run in "${MLPERF_RUNS[@]}"; do
+        log "    - ${run%%:*} / ${run##*:}"
+    done
     log ""
 
     download_data
@@ -446,9 +643,10 @@ main() {
     patch_dockerfile
     prepare_data
     symlink_build_dirs
+    prepare_compliance_data
     setup_lfs_and_prebuild
-    launch_container
     run_benchmarks
+    run_audit_tests
 
     log "=============================================="
     log "Pipeline complete."
