@@ -1,0 +1,91 @@
+2026-03-02 16:36:46,909 - INFO - Performance metrics capture thread started
+2026-03-02 16:36:46,909 - INFO - Started performance metrics capture thread
+2026-03-02 16:36:46,910 - INFO - Starting metrics capture for endpoints: ['0.0.0.0:30000', '0.0.0.0:30001', '0.0.0.0:30002', '0.0.0.0:30003', '0.0.0.0:30004', '0.0.0.0:30005', '0.0.0.0:30006', '0.0.0.0:30007']
+2026-03-02 16:36:46,910 - INFO - Output directory: /work/build/compliance_logs/TEST07/endpoint_harness_logs
+2026-03-02 16:36:46,910 - INFO - Poll interval: 2.0s
+2026-03-02 16:36:46,909 - INFO - Multiple endpoints provided, using first for perf_metrics: 0.0.0.0:30000
+2026-03-02 16:36:46,910 - INFO - Writing metrics for 0.0.0.0:30000 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30000.jsonl
+2026-03-02 16:36:46,911 - INFO - Writing metrics for 0.0.0.0:30001 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30001.jsonl
+2026-03-02 16:36:46,911 - INFO - Writing metrics for 0.0.0.0:30002 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30002.jsonl
+2026-03-02 16:36:46,911 - INFO - Writing metrics for 0.0.0.0:30003 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30003.jsonl
+2026-03-02 16:36:46,911 - INFO - Writing metrics for 0.0.0.0:30004 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30004.jsonl
+2026-03-02 16:36:46,911 - INFO - Writing metrics for 0.0.0.0:30005 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30005.jsonl
+2026-03-02 16:36:46,911 - INFO - Writing metrics for 0.0.0.0:30006 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30006.jsonl
+2026-03-02 16:36:46,911 - INFO - Writing metrics for 0.0.0.0:30007 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30007.jsonl
+2026-03-02 16:38:59,291 - INFO - Received signal 15, shutting down...
+2026-03-02 16:39:00,491 - INFO - Performance metrics capture thread stopped
+2026-03-02 16:39:01,512 - INFO - No performance metrics captured
+2026-03-02 16:39:01,512 - INFO - Metrics capture stopped
+2026-03-02 17:19:06,755 - INFO - Performance metrics capture thread started
+2026-03-02 17:19:06,756 - INFO - Multiple endpoints provided, using first for perf_metrics: 0.0.0.0:30000
+2026-03-02 17:19:06,756 - INFO - Started performance metrics capture thread
+2026-03-02 17:19:06,756 - INFO - Starting metrics capture for endpoints: ['0.0.0.0:30000', '0.0.0.0:30001', '0.0.0.0:30002', '0.0.0.0:30003', '0.0.0.0:30004', '0.0.0.0:30005', '0.0.0.0:30006', '0.0.0.0:30007']
+2026-03-02 17:19:06,756 - INFO - Output directory: /work/build/compliance_logs/TEST07/endpoint_harness_logs
+2026-03-02 17:19:06,756 - INFO - Poll interval: 2.0s
+2026-03-02 17:19:06,758 - INFO - Writing metrics for 0.0.0.0:30000 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30000.jsonl
+2026-03-02 17:19:06,759 - INFO - Writing metrics for 0.0.0.0:30001 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30001.jsonl
+2026-03-02 17:19:06,761 - INFO - Writing metrics for 0.0.0.0:30002 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30002.jsonl
+2026-03-02 17:19:06,763 - INFO - Writing metrics for 0.0.0.0:30003 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30003.jsonl
+2026-03-02 17:19:06,765 - INFO - Writing metrics for 0.0.0.0:30004 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30004.jsonl
+2026-03-02 17:19:06,767 - INFO - Writing metrics for 0.0.0.0:30005 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30005.jsonl
+2026-03-02 17:19:06,768 - INFO - Writing metrics for 0.0.0.0:30006 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30006.jsonl
+2026-03-02 17:19:06,770 - INFO - Writing metrics for 0.0.0.0:30007 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30007.jsonl
+2026-03-02 17:21:20,859 - INFO - Received signal 15, shutting down...
+2026-03-02 17:21:21,404 - INFO - Waiting for perf metrics thread to finish...
+2026-03-02 17:21:22,217 - INFO - Performance metrics capture thread stopped
+2026-03-02 17:21:22,217 - INFO - No performance metrics captured
+2026-03-02 17:21:22,219 - INFO - Metrics capture stopped
+2026-03-02 18:23:59,713 - INFO - Performance metrics capture thread started
+2026-03-02 18:23:59,714 - INFO - Started performance metrics capture thread
+2026-03-02 18:23:59,715 - INFO - Multiple endpoints provided, using first for perf_metrics: 0.0.0.0:30000
+2026-03-02 18:23:59,715 - INFO - Starting metrics capture for endpoints: ['0.0.0.0:30000', '0.0.0.0:30001', '0.0.0.0:30002', '0.0.0.0:30003', '0.0.0.0:30004', '0.0.0.0:30005', '0.0.0.0:30006', '0.0.0.0:30007']
+2026-03-02 18:23:59,715 - INFO - Output directory: /work/build/compliance_logs/TEST07/endpoint_harness_logs
+2026-03-02 18:23:59,715 - INFO - Poll interval: 2.0s
+2026-03-02 18:23:59,717 - INFO - Writing metrics for 0.0.0.0:30000 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30000.jsonl
+2026-03-02 18:23:59,719 - INFO - Writing metrics for 0.0.0.0:30001 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30001.jsonl
+2026-03-02 18:23:59,721 - INFO - Writing metrics for 0.0.0.0:30002 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30002.jsonl
+2026-03-02 18:23:59,722 - INFO - Writing metrics for 0.0.0.0:30003 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30003.jsonl
+2026-03-02 18:23:59,723 - INFO - Writing metrics for 0.0.0.0:30004 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30004.jsonl
+2026-03-02 18:23:59,725 - INFO - Writing metrics for 0.0.0.0:30005 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30005.jsonl
+2026-03-02 18:23:59,727 - INFO - Writing metrics for 0.0.0.0:30006 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30006.jsonl
+2026-03-02 18:23:59,729 - INFO - Writing metrics for 0.0.0.0:30007 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30007.jsonl
+2026-03-02 18:26:12,446 - INFO - Received signal 15, shutting down...
+2026-03-02 18:26:13,098 - INFO - Performance metrics capture thread stopped
+2026-03-02 18:26:14,386 - INFO - No performance metrics captured
+2026-03-02 18:26:14,387 - INFO - Metrics capture stopped
+2026-03-02 21:47:05,527 - INFO - Performance metrics capture thread started
+2026-03-02 21:47:05,527 - INFO - Started performance metrics capture thread
+2026-03-02 21:47:05,527 - INFO - Multiple endpoints provided, using first for perf_metrics: 0.0.0.0:30000
+2026-03-02 21:47:05,528 - INFO - Starting metrics capture for endpoints: ['0.0.0.0:30000', '0.0.0.0:30001', '0.0.0.0:30002', '0.0.0.0:30003', '0.0.0.0:30004', '0.0.0.0:30005', '0.0.0.0:30006', '0.0.0.0:30007']
+2026-03-02 21:47:05,528 - INFO - Output directory: /work/build/compliance_logs/TEST07/endpoint_harness_logs
+2026-03-02 21:47:05,528 - INFO - Poll interval: 2.0s
+2026-03-02 21:47:05,530 - INFO - Writing metrics for 0.0.0.0:30000 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30000.jsonl
+2026-03-02 21:47:05,531 - INFO - Writing metrics for 0.0.0.0:30001 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30001.jsonl
+2026-03-02 21:47:05,532 - INFO - Writing metrics for 0.0.0.0:30002 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30002.jsonl
+2026-03-02 21:47:05,534 - INFO - Writing metrics for 0.0.0.0:30003 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30003.jsonl
+2026-03-02 21:47:05,536 - INFO - Writing metrics for 0.0.0.0:30004 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30004.jsonl
+2026-03-02 21:47:05,537 - INFO - Writing metrics for 0.0.0.0:30005 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30005.jsonl
+2026-03-02 21:47:05,539 - INFO - Writing metrics for 0.0.0.0:30006 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30006.jsonl
+2026-03-02 21:47:05,541 - INFO - Writing metrics for 0.0.0.0:30007 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30007.jsonl
+2026-03-02 21:49:20,649 - INFO - Received signal 15, shutting down...
+2026-03-02 21:49:21,090 - INFO - Performance metrics capture thread stopped
+2026-03-02 21:49:22,353 - INFO - No performance metrics captured
+2026-03-02 21:49:22,356 - INFO - Metrics capture stopped
+2026-03-02 22:07:42,703 - INFO - Performance metrics capture thread started
+2026-03-02 22:07:42,704 - INFO - Started performance metrics capture thread
+2026-03-02 22:07:42,704 - INFO - Multiple endpoints provided, using first for perf_metrics: 0.0.0.0:30000
+2026-03-02 22:07:42,704 - INFO - Starting metrics capture for endpoints: ['0.0.0.0:30000', '0.0.0.0:30001', '0.0.0.0:30002', '0.0.0.0:30003', '0.0.0.0:30004', '0.0.0.0:30005', '0.0.0.0:30006', '0.0.0.0:30007']
+2026-03-02 22:07:42,705 - INFO - Output directory: /work/build/compliance_logs/TEST07/endpoint_harness_logs
+2026-03-02 22:07:42,705 - INFO - Poll interval: 2.0s
+2026-03-02 22:07:42,706 - INFO - Writing metrics for 0.0.0.0:30000 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30000.jsonl
+2026-03-02 22:07:42,707 - INFO - Writing metrics for 0.0.0.0:30001 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30001.jsonl
+2026-03-02 22:07:42,709 - INFO - Writing metrics for 0.0.0.0:30002 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30002.jsonl
+2026-03-02 22:07:42,711 - INFO - Writing metrics for 0.0.0.0:30003 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30003.jsonl
+2026-03-02 22:07:42,713 - INFO - Writing metrics for 0.0.0.0:30004 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30004.jsonl
+2026-03-02 22:07:42,714 - INFO - Writing metrics for 0.0.0.0:30005 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30005.jsonl
+2026-03-02 22:07:42,716 - INFO - Writing metrics for 0.0.0.0:30006 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30006.jsonl
+2026-03-02 22:07:42,718 - INFO - Writing metrics for 0.0.0.0:30007 to /work/build/compliance_logs/TEST07/endpoint_harness_logs/metrics_0_0_0_0_30007.jsonl
+2026-03-02 22:09:44,092 - INFO - Received signal 15, shutting down...
+2026-03-02 22:09:44,220 - INFO - Performance metrics capture thread stopped
+2026-03-02 22:09:58,229 - INFO - No performance metrics captured
+2026-03-02 22:09:58,234 - INFO - Metrics capture stopped
