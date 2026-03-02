@@ -1,0 +1,18 @@
+2026-03-02 17:57:48,008 - INFO - Performance metrics capture thread started
+2026-03-02 17:57:48,008 - INFO - Started performance metrics capture thread
+2026-03-02 17:57:48,009 - INFO - Starting metrics capture for endpoints: ['0.0.0.0:30000', '0.0.0.0:30001', '0.0.0.0:30002', '0.0.0.0:30003', '0.0.0.0:30004', '0.0.0.0:30005', '0.0.0.0:30006', '0.0.0.0:30007']
+2026-03-02 17:57:48,009 - INFO - Output directory: /work/build/logs/2026.03.02-17.56.16/endpoint_harness_logs
+2026-03-02 17:57:48,009 - INFO - Poll interval: 2.0s
+2026-03-02 17:57:48,008 - INFO - Multiple endpoints provided, using first for perf_metrics: 0.0.0.0:30000
+2026-03-02 17:57:48,009 - INFO - Writing metrics for 0.0.0.0:30000 to /work/build/logs/2026.03.02-17.56.16/endpoint_harness_logs/metrics_0_0_0_0_30000.jsonl
+2026-03-02 17:57:48,009 - INFO - Writing metrics for 0.0.0.0:30001 to /work/build/logs/2026.03.02-17.56.16/endpoint_harness_logs/metrics_0_0_0_0_30001.jsonl
+2026-03-02 17:57:48,010 - INFO - Writing metrics for 0.0.0.0:30002 to /work/build/logs/2026.03.02-17.56.16/endpoint_harness_logs/metrics_0_0_0_0_30002.jsonl
+2026-03-02 17:57:48,010 - INFO - Writing metrics for 0.0.0.0:30003 to /work/build/logs/2026.03.02-17.56.16/endpoint_harness_logs/metrics_0_0_0_0_30003.jsonl
+2026-03-02 17:57:48,010 - INFO - Writing metrics for 0.0.0.0:30004 to /work/build/logs/2026.03.02-17.56.16/endpoint_harness_logs/metrics_0_0_0_0_30004.jsonl
+2026-03-02 17:57:48,010 - INFO - Writing metrics for 0.0.0.0:30005 to /work/build/logs/2026.03.02-17.56.16/endpoint_harness_logs/metrics_0_0_0_0_30005.jsonl
+2026-03-02 17:57:48,010 - INFO - Writing metrics for 0.0.0.0:30006 to /work/build/logs/2026.03.02-17.56.16/endpoint_harness_logs/metrics_0_0_0_0_30006.jsonl
+2026-03-02 17:57:48,010 - INFO - Writing metrics for 0.0.0.0:30007 to /work/build/logs/2026.03.02-17.56.16/endpoint_harness_logs/metrics_0_0_0_0_30007.jsonl
+2026-03-02 18:09:08,495 - INFO - Received signal 15, shutting down...
+2026-03-02 18:09:08,557 - INFO - Performance metrics capture thread stopped
+2026-03-02 18:09:20,121 - INFO - No performance metrics captured
+2026-03-02 18:09:20,122 - INFO - Metrics capture stopped
