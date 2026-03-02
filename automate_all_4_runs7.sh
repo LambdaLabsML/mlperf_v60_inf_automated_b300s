@@ -24,8 +24,8 @@ MLPERF_SYSTEM_NAME="B300-SXM-270GBx8"
 
 # Run configurations: "scenario:test_mode" pairs executed in order
 MLPERF_RUNS=(
-    # "Server:PerformanceOnly"
-    # "Server:AccuracyOnly"
+    "Server:PerformanceOnly"
+    "Server:AccuracyOnly"
     "Offline:PerformanceOnly"
     "Offline:AccuracyOnly"
 )
