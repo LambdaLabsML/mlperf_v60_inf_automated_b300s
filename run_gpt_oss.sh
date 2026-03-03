@@ -126,40 +126,20 @@ DOCKER_CONTAINER_NAME=""
 # Argument Parsing
 # -----------------------------------------------------------------------------
 parse_args() {
-    for arg in "$@"; do
-        case "${arg}" in
-            --work-dir=*)           WORK_DIR="${arg#*=}" ;;
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --work-dir=*)           WORK_DIR="${1#*=}" ;;
+            --work-dir)             [[ -n "${2:-}" && "${2}" != --* ]] || die "--work-dir requires a value."
+                                    WORK_DIR="$2"; shift ;;
+            --audit-scenarios=*)    IFS=',' read -ra AUDIT_SCENARIOS <<< "${1#*=}" ;;
+            --audit-scenarios)      [[ -n "${2:-}" && "${2}" != --* ]] || die "--audit-scenarios requires a value (e.g. Server,Offline)."
+                                    IFS=',' read -ra AUDIT_SCENARIOS <<< "$2"; shift ;;
             --skip-download)        SKIP_DOWNLOAD=true ;;
             --skip-benchmark)       SKIP_BENCHMARK=true ;;
             --skip-audit)           SKIP_AUDIT=true ;;
-            --audit-scenarios=*)    IFS=',' read -ra AUDIT_SCENARIOS <<< "${arg#*=}" ;;
-            --work-dir|--audit-scenarios) ;;
-            *) warn "Unknown argument: ${arg}" ;;
+            *)                      warn "Unknown argument: $1" ;;
         esac
-    done
-
-    # Handle space-separated --key <value> pairs
-    local i=1
-    for arg in "$@"; do
-        if [[ "${arg}" == "--work-dir" ]]; then
-            local next
-            next=$(eval "echo \${$((i+1)):-}")
-            if [[ -n "${next}" && "${next}" != --* ]]; then
-                WORK_DIR="${next}"
-            else
-                die "--work-dir requires a value."
-            fi
-        fi
-        if [[ "${arg}" == "--audit-scenarios" ]]; then
-            local next
-            next=$(eval "echo \${$((i+1)):-}")
-            if [[ -n "${next}" && "${next}" != --* ]]; then
-                IFS=',' read -ra AUDIT_SCENARIOS <<< "${next}"
-            else
-                die "--audit-scenarios requires a value (e.g. Server,Offline)."
-            fi
-        fi
-        ((i++))
+        shift
     done
 
     [[ -n "${WORK_DIR}" ]] || die "Usage: $0 --work-dir <path> [--skip-download] [--skip-benchmark] [--skip-audit] [--audit-scenarios=Server,Offline]"
@@ -219,12 +199,13 @@ download_data() {
 clone_repo() {
     log "Cloning MLPerf Inference Partner repo..."
     if [[ -d "${REPO_DIR}" ]]; then
-        warn "Repo already exists at ${REPO_DIR}. Pulling latest changes instead."
-        git -C "${REPO_DIR}" pull --ff-only || die "Failed to pull latest changes."
+        log "Repo already exists at ${REPO_DIR} — skipping clone."
     else
         git clone "${REPO_URL}" "${REPO_DIR}" || die "Failed to clone repo from ${REPO_URL}"
-        cd "${REPO_DIR}" && git checkout d3091a5590a7a3dd0f4b035fa8514162bcc24ecc && cd "${WORK_DIR}"
     fi
+    log "Checking out pinned commit d3091a5590a7a3dd0f4b035fa8514162bcc24ecc..."
+    git -C "${REPO_DIR}" checkout d3091a5590a7a3dd0f4b035fa8514162bcc24ecc \
+        || die "Failed to checkout pinned commit."
     log "Repo ready at ${REPO_DIR}."
 }
 
