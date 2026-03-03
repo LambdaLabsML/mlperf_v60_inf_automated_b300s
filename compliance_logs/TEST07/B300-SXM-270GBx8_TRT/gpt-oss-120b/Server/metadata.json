@@ -320,8 +320,8 @@
                     "tags": {
                         "__SET__": [
                             "custom",
-                            "gpu_based",
                             "multi_gpu",
+                            "gpu_based",
                             "is_blackwell"
                         ]
                     }
@@ -350,10 +350,10 @@
     "early_stopping_met": true,
     "effective_min_duration_ms": 0,
     "effective_min_query_count": 990,
-    "latency_usage_tpot": 0.1524091,
-    "latency_usage_ttft": 0.38635152466666667,
+    "latency_usage_tpot": 0.1498096625,
+    "latency_usage_ttft": 0.37820413633333333,
     "power_meter_enabled": false,
-    "result_completed_tokens_per_second": 46062.6,
+    "result_completed_tokens_per_second": 160939,
     "result_validity": "VALID",
     "satisfies_query_constraint": false,
     "scenario": "Server",
@@ -362,6 +362,6 @@
     "tensorrt_version": "10.14.1.48",
     "test_mode": "PerformanceOnly",
     "true_result_metric": "result_completed_tokens_per_second",
-    "true_result_value": 46062.6,
+    "true_result_value": 160939.0,
     "workload_setting_code": "cp990"
 }

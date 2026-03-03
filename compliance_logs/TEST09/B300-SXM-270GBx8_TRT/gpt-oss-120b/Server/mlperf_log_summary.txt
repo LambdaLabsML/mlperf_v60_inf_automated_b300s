@@ -4,8 +4,8 @@ MLPerf Results Summary
 SUT name : PySUT
 Scenario : Server
 Mode     : PerformanceOnly
-Completed samples per second    : 58.16
-Completed tokens per second: 76424.68
+Completed samples per second    : 58.12
+Completed tokens per second: 76266.88
 Result is : VALID
   Performance constraints satisfied : Yes
   Min duration satisfied : Yes
@@ -20,36 +20,36 @@ TPOT Early Stopping Result:
 Additional Stats
 ================================================
 Scheduled samples per second : 72.64
-Min latency (ns)                : 9491063647
-Max latency (ns)                : 84919977430
-Mean latency (ns)               : 35371012010
-50.00 percentile latency (ns)   : 34985690918
-90.00 percentile latency (ns)   : 46314911340
-95.00 percentile latency (ns)   : 49431539096
-97.00 percentile latency (ns)   : 52010686608
-99.00 percentile latency (ns)   : 56541817235
-99.90 percentile latency (ns)   : 66628934059
+Min latency (ns)                : 11774718953
+Max latency (ns)                : 82219749933
+Mean latency (ns)               : 35162056545
+50.00 percentile latency (ns)   : 34843564046
+90.00 percentile latency (ns)   : 45981768151
+95.00 percentile latency (ns)   : 49447478455
+97.00 percentile latency (ns)   : 51473197454
+99.00 percentile latency (ns)   : 56511154375
+99.90 percentile latency (ns)   : 67041374347
 
-Completed tokens per second                 : 76424.68
-Min First Token latency (ns)                : 39095676
-Max First Token latency (ns)                : 351117009
-Mean First Token latency (ns)               : 115538247
-50.00 percentile first token latency (ns)   : 106504312
-90.00 percentile first token latency (ns)   : 166211337
-95.00 percentile first token latency (ns)   : 191278085
-97.00 percentile first token latency (ns)   : 212598595
-99.00 percentile first token latency (ns)   : 245805437
-99.90 percentile first token latency (ns)   : 310283952
+Completed tokens per second                 : 76266.88
+Min First Token latency (ns)                : 36368361
+Max First Token latency (ns)                : 390019817
+Mean First Token latency (ns)               : 112301518
+50.00 percentile first token latency (ns)   : 104490829
+90.00 percentile first token latency (ns)   : 164327506
+95.00 percentile first token latency (ns)   : 189162413
+97.00 percentile first token latency (ns)   : 205857173
+99.00 percentile first token latency (ns)   : 240428531
+99.90 percentile first token latency (ns)   : 288146285
 
-Min Time per Output Token (ns)                : 12695214
-Max Time per Output Token (ns)                : 33770109
-Mean Time per Output Token (ns)               : 26960289
-50.00 percentile time to output token (ns)   : 27846401
-90.00 percentile time to output token (ns)   : 31866005
-95.00 percentile time to output token (ns)   : 32264896
-97.00 percentile time to output token (ns)   : 32506831
-99.00 percentile time to output token (ns)   : 32822871
-99.90 percentile time to output token (ns)   : 33288358
+Min Time per Output Token (ns)                : 12371857
+Max Time per Output Token (ns)                : 34096124
+Mean Time per Output Token (ns)               : 26828507
+50.00 percentile time to output token (ns)   : 27763168
+90.00 percentile time to output token (ns)   : 31749386
+95.00 percentile time to output token (ns)   : 32135218
+97.00 percentile time to output token (ns)   : 32397077
+99.00 percentile time to output token (ns)   : 32766665
+99.90 percentile time to output token (ns)   : 33479118
 
 ================================================
 Test Parameters Used

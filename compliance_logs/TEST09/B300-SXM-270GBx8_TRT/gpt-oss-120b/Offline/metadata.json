@@ -321,8 +321,8 @@
                         "__SET__": [
                             "is_blackwell",
                             "gpu_based",
-                            "custom",
-                            "multi_gpu"
+                            "multi_gpu",
+                            "custom"
                         ]
                     }
                 },
@@ -351,8 +351,8 @@
     "effective_min_duration_ms": 0,
     "effective_samples_per_query": 6396,
     "power_meter_enabled": false,
-    "result_samples_per_second": 72.17,
-    "result_tokens_per_second": 94286.1,
+    "result_samples_per_second": 71.7654,
+    "result_tokens_per_second": 93703.5,
     "result_validity": "VALID",
     "satisfies_query_constraint": false,
     "scenario": "Offline",
@@ -361,6 +361,6 @@
     "tensorrt_version": "10.14.1.48",
     "test_mode": "PerformanceOnly",
     "true_result_metric": "result_tokens_per_second",
-    "true_result_value": 94286.1,
+    "true_result_value": 93703.5,
     "workload_setting_code": "cp990"
 }
