@@ -82,6 +82,9 @@ teardown_container() {
 WORK_DIR=""
 SCRATCH_PATH=""
 SKIP_DOWNLOAD=false
+SKIP_BENCHMARK=false
+SKIP_AUDIT=false
+AUDIT_SCENARIOS=()          # populated by --audit-scenarios; defaults to (Server Offline)
 
 # Derived paths (set after argument parsing)
 DATA_DIR=""
@@ -125,14 +128,17 @@ DOCKER_CONTAINER_NAME=""
 parse_args() {
     for arg in "$@"; do
         case "${arg}" in
-            --work-dir=*)      WORK_DIR="${arg#*=}" ;;
-            --skip-download)   SKIP_DOWNLOAD=true ;;
-            --work-dir|--skip-download) ;;
+            --work-dir=*)           WORK_DIR="${arg#*=}" ;;
+            --skip-download)        SKIP_DOWNLOAD=true ;;
+            --skip-benchmark)       SKIP_BENCHMARK=true ;;
+            --skip-audit)           SKIP_AUDIT=true ;;
+            --audit-scenarios=*)    IFS=',' read -ra AUDIT_SCENARIOS <<< "${arg#*=}" ;;
+            --work-dir|--audit-scenarios) ;;
             *) warn "Unknown argument: ${arg}" ;;
         esac
     done
 
-    # Handle space-separated --work-dir <value>
+    # Handle space-separated --key <value> pairs
     local i=1
     for arg in "$@"; do
         if [[ "${arg}" == "--work-dir" ]]; then
@@ -144,10 +150,24 @@ parse_args() {
                 die "--work-dir requires a value."
             fi
         fi
+        if [[ "${arg}" == "--audit-scenarios" ]]; then
+            local next
+            next=$(eval "echo \${$((i+1)):-}")
+            if [[ -n "${next}" && "${next}" != --* ]]; then
+                IFS=',' read -ra AUDIT_SCENARIOS <<< "${next}"
+            else
+                die "--audit-scenarios requires a value (e.g. Server,Offline)."
+            fi
+        fi
         ((i++))
     done
 
-    [[ -n "${WORK_DIR}" ]] || die "Usage: $0 --work-dir <path> [--skip-download]"
+    [[ -n "${WORK_DIR}" ]] || die "Usage: $0 --work-dir <path> [--skip-download] [--skip-benchmark] [--skip-audit] [--audit-scenarios=Server,Offline]"
+
+    # Default audit scenarios if not specified
+    if [[ ${#AUDIT_SCENARIOS[@]} -eq 0 ]]; then
+        AUDIT_SCENARIOS=(Server Offline)
+    fi
 
     # Derive all paths from WORK_DIR
     SCRATCH_PATH="${WORK_DIR}/scratch"
@@ -606,10 +626,10 @@ run_audit_for_scenario() {
 
 run_audit_tests() {
     log "============================================================"
-    log "Beginning audit test pipeline for all scenarios..."
+    log "Beginning audit test pipeline for scenarios: ${AUDIT_SCENARIOS[*]}..."
     log "============================================================"
 
-    for scenario in Server Offline; do
+    for scenario in "${AUDIT_SCENARIOS[@]}"; do
         run_audit_for_scenario "${scenario}"
     done
 
@@ -629,9 +649,12 @@ main() {
     log "=============================================="
     log "MLPerf Inference Benchmark — GPT-OSS-120B"
     log "=============================================="
-    log "  Work dir     : ${WORK_DIR}"
-    log "  Scratch path : ${SCRATCH_PATH}"
-    log "  System       : ${MLPERF_SYSTEM_NAME}"
+    log "  Work dir         : ${WORK_DIR}"
+    log "  Scratch path     : ${SCRATCH_PATH}"
+    log "  System           : ${MLPERF_SYSTEM_NAME}"
+    log "  Skip benchmark   : ${SKIP_BENCHMARK}"
+    log "  Skip audit       : ${SKIP_AUDIT}"
+    log "  Audit scenarios  : ${AUDIT_SCENARIOS[*]}"
     log "  Benchmark runs planned:"
     for run in "${MLPERF_RUNS[@]}"; do
         log "    - ${run%%:*} / ${run##*:}"
@@ -645,8 +668,18 @@ main() {
     symlink_build_dirs
     prepare_compliance_data
     setup_lfs_and_prebuild
-    run_benchmarks
-    run_audit_tests
+
+    if [[ "${SKIP_BENCHMARK}" == true ]]; then
+        log "Skipping benchmarks (--skip-benchmark specified)."
+    else
+        run_benchmarks
+    fi
+
+    if [[ "${SKIP_AUDIT}" == true ]]; then
+        log "Skipping audit tests (--skip-audit specified)."
+    else
+        run_audit_tests
+    fi
 
     log "=============================================="
     log "Pipeline complete."
